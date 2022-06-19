@@ -13,7 +13,30 @@ If your interests are anything remotely related to that, you might be interested
 
 If you're writing C# bindings for a library that's in C or C++, this has nothing to do with that, really. The technique I'm using here is irrelevant to it, and the amount of work is just massive anyway, in comparison to some simple `DllImport` or whatever.
 
+## Future work
+
+What remains to be done is a ton of things related to automation:
+* Generating glue from the C++ APIs (potential options: CppSharp or SWIG)
+* Enhancing and optimising the `Assembly` utility, so it caches already looked-up methods, and to support any kinda function parameters. Right now, it's either `void()`, `int(void*)` or `void(void*)`. 
+* Hot-reloading.
+
+I imagine, in the future, I'll go for this kinda system with the following layers:
+* Scripts: a bunch of `.cs` files lying in some `scripts` folder
+* ScriptManager: a C# library that will use Roslyn to compile these scripts into another C# DLL, and load that
+* Host: a C++ app that will load ScriptManager and execute it, and by doing so, will also interact with Scripts
+
+Hot-reloading might be easier to do once this ^ kinda architecture is in place.
+
+Finally, I could write a couple of articles/guides about how this works and how one could use it.
+
 ## Notes
+There are definitely lots of things left unexplained, but I think there is just about enough comments in the code and notes here to get an idea of the big picture.
+
+But TL;DR, the C++ app loads something called HostFxr and loads a C# assembly (DLL) with that. What happens next is a simple exchange of APIs via function pointers and delegates. In super layman terms, the C++ app "gives" functions to the C# side, and vice-versa, as opposed to the C# side doing something like `DllImport`. 
+
+In fact, this is the reverse scenario of that. Instead of the C# app DllImport-ing functions from a C++ DLL, a C++ app imports functions from a C# DLL. I think you get the idea by now.
+
+Here are some other technical notes in no specific order:
 * This uses .NET 5 primarily because I developed the thing in VS2019, might switch to .NET 6 at some point
 * Look at `src/CppHostUtilities/SharpHost.hpp` on how to initialise HostFxr and load C# DLLs. It mentions `hostfxr.h`, `nethost.h` and how to get them
 * `src/CppHostUtilities/Assembly` can be vastly improved, in the way of obtaining function pointers to C# methods
@@ -34,14 +57,6 @@ If you're writing C# bindings for a library that's in C or C++, this has nothing
 * None of this code is production-ready and won't be for a few years
 * Tested only so far on Windows 10 x64, ideally I'd like to support Linux too
 * Use CMake to generate/build the C++ project. As for the C# project, it's already there, I most likely won't be using CMake for it, even though CMake does have C# support. Everything should work out of the box, copying the correct files into `ScriptingMachine4/bin`
-* What remains to be done is a ton of things related to automation:
-	* generating glue from the C++ APIs (potential options: CppSharp or SWIG)
-	* hot-reloading
-* I imagine, in the future, I'll go for this kinda system with the following layers:
-	* Scripts: a bunch of `.cs` files lying in some `scripts` folder
-	* ScriptManager: a C# library that will use Roslyn to compile these scripts into another C# DLL, and load that
-	* Host: a C++ app that will load ScriptManager and execute it, and by doing so, will also interact with Scripts
-* Hot-reloading might be easier to do once this ^ kinda architecture is in place
  
 ## History
 
