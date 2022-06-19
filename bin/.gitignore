@@ -1,0 +1,7 @@
+
+*.dll
+*.exe
+*.deps.json
+
+## Make sure to keep the runtime config
+!*.runtimeconfig.json
