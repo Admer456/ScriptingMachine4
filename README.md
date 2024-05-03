@@ -1,3 +1,4 @@
+*Note: This project has been abandoned. Studio Cherno's [Coral](https://github.com/StudioCherno/Coral) library represents what was my exact vision for Scripting Machine. I am satisfied, personally. So please go ahead and use that if you want a nice C# scripting runtime for C++ engines!*
 
 # Scripting Machine IV
 
